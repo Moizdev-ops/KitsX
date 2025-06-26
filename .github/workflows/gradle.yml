@@ -1,4 +1,4 @@
-name: Java CI with Gradle
+name: Build Plugin with Gradle
 
 on:
   push:
@@ -13,7 +13,7 @@ jobs:
       contents: read
 
     steps:
-      - name: 📥 Checkout Repository
+      - name: 📥 Checkout repository
         uses: actions/checkout@v4
 
       - name: ☕ Set up JDK 17
@@ -22,8 +22,16 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: ⚙️ Setup Gradle (with caching)
-        uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+      # Attempt to generate Gradle wrapper if missing
+      - name: ⚠️ Generate Gradle Wrapper if missing
+        run: |
+          if [ ! -f "./gradlew" ]; then
+            echo "Gradle wrapper not found, generating..."
+            gradle wrapper --gradle-version 8.6
+          fi
+
+      - name: ✅ Make gradlew executable
+        run: chmod +x ./gradlew
 
       - name: 🛠️ Build Plugin with Gradle
         run: ./gradlew build
@@ -50,4 +58,4 @@ jobs:
           distribution: 'temurin'
 
       - name: 📊 Submit dependency graph
-        uses: gradle/actions/dependency-submission@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+        uses: gradle/actions/dependency-submission@af1da67850ed9a4cedd57bfd976089dd991e2582
