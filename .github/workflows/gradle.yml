@@ -22,18 +22,19 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      # Attempt to generate Gradle wrapper if missing
-      - name: ⚠️ Generate Gradle Wrapper if missing
-        run: |
-          if [ ! -f "./gradlew" ]; then
-            echo "Gradle wrapper not found, generating..."
-            gradle wrapper --gradle-version 8.6
-          fi
+      # ⬇️ TEMP install Gradle only to generate wrapper
+      - name: 🔧 Install Gradle CLI
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.6'
+
+      - name: 🧱 Generate Gradle Wrapper
+        run: gradle wrapper --gradle-version 8.6
 
       - name: ✅ Make gradlew executable
         run: chmod +x ./gradlew
 
-      - name: 🛠️ Build Plugin with Gradle
+      - name: 🛠️ Build Plugin with Gradle Wrapper
         run: ./gradlew build
 
       - name: 📦 Upload plugin JAR as Artifact
@@ -58,4 +59,4 @@ jobs:
           distribution: 'temurin'
 
       - name: 📊 Submit dependency graph
-        uses: gradle/actions/dependency-submission@af1da67850ed9a4cedd57bfd976089dd991e2582
+        uses: gradle/actions/dependency-submission@v4
